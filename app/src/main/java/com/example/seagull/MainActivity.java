@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            arrayList.add(new LineItem(20.4, "Crunchyroll Subscription", sdf.parse("2023-04-12")));
-            arrayList.add(new LineItem(18.21, "WSJ Subscription", sdf.parse("2033-04-12")));
-            arrayList.add(new LineItem(10.42, "Cereal", sdf.parse("2021-03-12")));
-            arrayList.add(new LineItem(2.40, "Donation to Homeless", sdf.parse("2022-01-12")));
+            arrayList.add(new LineItem(20.4, "Crunchyroll Subscription", sdf.parse("2023-04-12"),false));
+            arrayList.add(new LineItem(18.21, "WSJ Subscription", sdf.parse("2033-04-12"), false));
+            arrayList.add(new LineItem(10.42, "Cereal", sdf.parse("2021-03-12"), false));
+            arrayList.add(new LineItem(2.40, "Donation to Homeless", sdf.parse("2022-01-12"), false));
 
         } catch (ParseException e) {
             throw new RuntimeException(e);
