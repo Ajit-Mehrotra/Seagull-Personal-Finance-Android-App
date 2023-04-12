@@ -9,7 +9,7 @@ public class LineItem {
     private String category;
 
 
-    public LineItem(double amount, String title, Date date, String category) {
+    public LineItem(double amount, String title, Date date) {
         this.amount = amount;
         this.title = title;
         this.date = date;
