@@ -18,32 +18,12 @@
 
             <!--TAB 1-->
             <LinearLayout android:id="@+id/tab1"
+                layout="@layout/activity_tables"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/light_grey"
                 android:layout_marginTop="10dp">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Expenses" />
-
-                <ListView
-                    android:id="@+id/expenseView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></ListView>
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Earnings" />
-                <ListView
-                    android:id="@+id/earningView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
             </LinearLayout>
             <!--TAB 2-->
             <LinearLayout android:id="@+id/tab2"
