@@ -2,11 +2,13 @@
 <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tabhost"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <!--TABs VIEW-->
         <FrameLayout android:id="@android:id/tabcontent"

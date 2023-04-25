@@ -1,17 +1,46 @@
 package com.example.seagull;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.TabHost;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.maps.SupportMapFragment;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+
+    SupportMapFragment mapFragment = SupportMapFragment.newInstance();
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+    private static MainActivity instance;
+    private final int REQUEST_LOCATION_PERMISSION = 1;
+    public static MainActivity getInstance() {
+        return instance;
+    }
+    public void changeTab(int tabIndex) {
+        TabHost tabHost = findViewById(android.R.id.tabhost);
+        tabHost.setCurrentTab(tabIndex);
+    }
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.activity_main);
+        requestLocationPermission();
 
         //CREATE TAB HOST
         TabHost tabs = (TabHost) findViewById(R.id.tabhost);
@@ -82,14 +111,42 @@ public class MainActivity extends AppCompatActivity {
         tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
-                if (tabId.equals("tag2")) {
+
+
+                if (tabId.equals("tag4")) {
                     // START NEW INTENT FOR MAP TAB
                     Intent intent = new Intent(getApplicationContext(), Map.class);
+                    intent.putExtra("tabId", "tag1");
                     startActivity(intent);
+
+
+
+                    ;
                 }
             }
         });
 
 
+
+    }
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(EasyPermissions.hasPermissions(this, perms)) {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+    public SupportMapFragment getMapFragment() {
+        return mapFragment;
     }
 }
