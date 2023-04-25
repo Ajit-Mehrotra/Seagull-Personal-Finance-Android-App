@@ -6,23 +6,14 @@ public class LineItem {
     private double amount;
     private String title;
     private Date date;
-    private boolean category; // 0 is expense, 1 is income
 
-
-    public LineItem(double amount, String title, Date date, boolean category) {
+    public LineItem(double amount, String title, Date date) {
         this.amount = amount;
         this.title = title;
         this.date = date;
-        this.category = category;
+
     }
 
-    public boolean getCategory() {
-        return category;
-    }
-
-    public void setCategory(boolean category) {
-        this.category = category;
-    }
 
     public Date getDate() {
         return date;

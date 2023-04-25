@@ -7,9 +7,32 @@
     tools:context=".MainActivity">
 
 
-    <ListView
-        android:id="@+id/listView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expenses" />
+
+        <ListView
+            android:id="@+id/expenseView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ListView>
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Earnings" />
+        <ListView
+            android:id="@+id/earningView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
 
 </RelativeLayout>
