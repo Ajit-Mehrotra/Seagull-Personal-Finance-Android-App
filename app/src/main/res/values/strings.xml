@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Seagull</string>
+    <string name="title_monthly">Monthly Activity</string>
+    <string name="title_goals">Financial Goals</string>
+    <string name="title_map">Financial Map</string>
+    <string name="title_review">Goal Review</string>
 </resources>

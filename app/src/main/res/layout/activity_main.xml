@@ -1,38 +1,88 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_main"
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tabhost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-
-    <LinearLayout
+    <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
+
+        <!--TABs VIEW-->
+        <FrameLayout android:id="@android:id/tabcontent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Expenses" />
+            android:layout_weight="1">
 
-        <ListView
-            android:id="@+id/expenseView"
+            <!--TAB 1-->
+            <LinearLayout android:id="@+id/tab1"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Expenses" />
+
+                <ListView
+                    android:id="@+id/expenseView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></ListView>
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Earnings" />
+                <ListView
+                    android:id="@+id/earningView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            <!--TAB 2-->
+            <LinearLayout android:id="@+id/tab2"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginTop="10dp">
+            </LinearLayout>
+
+            <!--TAB 3-->
+            <LinearLayout android:id="@+id/tab3"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginTop="10dp">
+            </LinearLayout>
+
+            <!--TAB 4-->
+            <LinearLayout android:id="@+id/tab4"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/light_grey"
+                android:layout_marginTop="10dp">
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <!--BOTTOM TAB DISPLAY-->
+        <TabWidget
+            android:id="@android:id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Earnings" />
-        <ListView
-            android:id="@+id/earningView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/orange2"
+            android:layout_weight="0"
+            android:layout_marginBottom="4dp"
+            />
+
     </LinearLayout>
-
-
-
-</RelativeLayout>
+</TabHost>
