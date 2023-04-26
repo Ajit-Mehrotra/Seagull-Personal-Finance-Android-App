@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     private TableFragment tableFragment;
     private MapFragment mapFragment;
 
-    private BankDetailsFragment bankDetailsFragment;
+//    private BankDetailsFragment bankDetailsFragment;
     private TextToSpeech tts;
 
     @Override
@@ -83,13 +84,14 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         mapFragment = new MapFragment();
 
         //add bankDetails fragment
-        bankDetailsFragment = new BankDetailsFragment();
+//        bankDetailsFragment = new BankDetailsFragment();
+
 
         //add fragments to adapters
         fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
         fragmentAdapter.addFragment(formFragment, "Submission Form");
         fragmentAdapter.addFragment(mapFragment, "ATM Maps");
-        fragmentAdapter.addFragment(bankDetailsFragment, "Bank Details");
+//        fragmentAdapter.addFragment(bankDetailsFragment, "Bank Details");
 
 
         viewPager.setAdapter(fragmentAdapter);
@@ -155,11 +157,8 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         }
         super.onDestroy();
     }
-    public void openDial(View view) {
-        Uri uri = Uri.parse("tel:7818912000");
-        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        startActivity(intent);
-    }
+
+
 }
 
 

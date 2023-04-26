@@ -16,12 +16,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +36,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
@@ -48,7 +60,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     private Context thiscontext;
 
     private LatLng userLocation;
-
+    private ArrayList<String> places;
+    private ArrayList<Bank> banks;
 
     @Override
     public void onAttach(Context context) {
@@ -56,6 +69,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         ma = (MainActivity) getActivity();
         thiscontext = ma.getApplicationContext();
     }
+
     @SuppressLint("MissingPermission")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,10 +83,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
                 // Handle button click
                 findBank(v);
             }
+
         });
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+
         return rootView;
 
 
@@ -99,11 +116,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         };
 
         mMap.setOnMarkerClickListener(marker -> {
-
             Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(thiscontext, WebActivity.class);
-            intent.putExtra("website", "https://www.bentley.edu");
-            startActivity(intent);
+
+
+          try{
+              String bankID = marker.getSnippet();
+              Bank b = getBank(bankID);
+              Intent intent = new Intent(thiscontext, WebActivity.class);
+              try {
+                  String website = b.getWebsite();
+                  intent.putExtra("website", website);
+              } catch (Exception e) {
+
+              }
+              try {
+                  String name = b.getName();
+                  intent.putExtra("name", name);
+
+              } catch (Exception e) {
+
+              }
+              try {
+                  String phone = b.getPhone();
+                  intent.putExtra("phone", phone);
+              } catch (Exception e) {
+
+              }
+              try {
+                  String address = b.getWebsite();
+                  intent.putExtra("address", address);
+              } catch (Exception e) {
+
+              }
+              startActivity(intent);
+          }catch (Exception e){
+              Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+          }
+
+//            Log.d("MapFragment", "Banks: " + banks.size());
 
 
             return false;
@@ -128,12 +178,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(client, request, this);
     }
-    public void findBank (View v){
+
+    public void findBank(View v) {
         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        sb.append("location="+userLocation.latitude +","+userLocation.longitude);
-        sb.append("&radius="+10000);
-        sb.append("&keyword="+"Bank");
-        sb.append("&key="+getResources().getString(R.string.google_maps_key));
+        sb.append("location=" + userLocation.latitude + "," + userLocation.longitude);
+        sb.append("&radius=" + 10000);
+        sb.append("&keyword=" + "Bank");
+        sb.append("&key=" + getResources().getString(R.string.google_maps_key));
         String url = sb.toString();
         Object dataTransfer[] = new Object[2];
         dataTransfer[0] = mMap;
@@ -141,8 +192,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
 
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
         getNearbyPlaces.execute(dataTransfer);
+        places = getNearbyPlaces.getPlaceIds();
+        banks = getNearbyPlaces.getBanks();
 
     }
+
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -157,7 +211,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     public void onLocationChanged(@NonNull Location location) {
         userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(userLocation,12);
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(userLocation, 12);
         mMap.animateCamera(update);
         MarkerOptions options = new MarkerOptions();
         options.position(userLocation);
@@ -165,6 +219,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         mMap.addMarker(options);
     }
 
+    private Bank getBank(String ID) {
+        for (Bank b : banks
+        ) {
+            if (b.getID().equals(ID)) {
+                return b;
+            }
+        }
+        return null;
+    }
 }
 
 
