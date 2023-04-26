@@ -11,46 +11,45 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MyAdapter extends ArrayAdapter {
+public class ExpensesAdapter extends ArrayAdapter {
 
     private Context context;
-    private ArrayList<LineItem> arrayList;
-    private TextView itemAmount;
-    private TextView itemTitle;
+    private ArrayList<LineItem> expenseList;
+    private TextView expenseAmount;
+    private TextView expenseTitle;
+    private TextView expenseDate;
 
-    private TextView itemDate;
-
-    public MyAdapter(Context context, ArrayList<LineItem> arrayList) {
+    public ExpensesAdapter(Context context, ArrayList<LineItem> arrayList) {
         super(context, 0, arrayList);
         this.context = context;
-        this.arrayList = arrayList;
+        this.expenseList = arrayList;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //call inflater to create a View from an xml layout file
-        convertView = LayoutInflater.from(context).inflate(R.layout.row, parent, false);
+        convertView = LayoutInflater.from(context).inflate(R.layout.expense_row, parent, false);
 
         //get references for row widgets
-        itemTitle = convertView.findViewById(R.id.itemTitle);
-        itemAmount = convertView.findViewById(R.id.itemAmount);
-        itemDate = convertView.findViewById(R.id.itemDate);
+        expenseTitle = convertView.findViewById(R.id.expenseTitle);
+        expenseAmount = convertView.findViewById(R.id.expenseAmount);
+        expenseDate = convertView.findViewById(R.id.expenseDate);
 
         //get the amount from the arraylist and set the UI to it
-        Double amt = arrayList.get(position).getAmount();
-        itemAmount.setText(String.format("%.2f", amt));
+        Double amt = expenseList.get(position).getAmount();
+        expenseAmount.setText(String.format("%.2f", amt));
 
         //get the title from the arraylist and set the UI to it
-        String title = arrayList.get(position).getTitle();
-        itemTitle.setText(title);
+        String title = expenseList.get(position).getTitle();
+        expenseTitle.setText(title);
 
         // get the date from the arraylist and set the UI to it
-        Date date = arrayList.get(position).getDate();
+        Date date = expenseList.get(position).getDate();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         String formattedDate = sdf.format(date);
-        itemDate.setText(formattedDate);
+        expenseDate.setText(formattedDate);
 
         return convertView;
     }

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/row"
+    android:id="@+id/earningRow"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:padding="4dp">
 
     <TextView
-        android:id="@+id/itemAmount"
+        android:id="@+id/currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$ " />
+
+    <TextView
+        android:id="@+id/earningAmount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -16,7 +22,7 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/itemTitle"
+        android:id="@+id/earningTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -25,7 +31,7 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/itemDate"
+        android:id="@+id/earningDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"

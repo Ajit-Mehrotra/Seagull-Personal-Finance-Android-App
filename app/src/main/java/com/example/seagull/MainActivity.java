@@ -2,119 +2,163 @@ package com.example.seagull;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import android.widget.ListView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
+import android.content.Context;
 import android.content.Intent;
-import android.widget.TabHost;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.telephony.PhoneNumberUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-    ArrayList<LineItem> arrayList = new ArrayList<LineItem>();
-    ListView listView;
-    MyAdapter adapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.util.Locale;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+// Main Activity class that hosts the ViewPager and TabLayout
+public class MainActivity extends AppCompatActivity implements FormSubmitListener, TextToSpeech.OnInitListener {
+
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    //STUFF RELATING TO TABS
+    LocationManager locationManager;
+    private Context mContext;
+    public MainActivity(Context context) {
+        mContext = context;
+    }
+    public MainActivity() {
+        // ...
+    }
+    public LocationManager getLocationManager() {
+        this.locationManager = locationManager;
+        return locationManager;
+    }
+    private ViewPager2 viewPager;
+    private FragmentAdapter fragmentAdapter;
+    private TabLayout tabLayout;
+
+    /* ViewPager2 swipes between fragments
+    FragmentAdapter is the adapter for ViewPager2 to manage all the fragments
+     TabLayout shows the tabs for the respective fragments*/
+
+    //FRAGMENTS
+    private FormFragment formFragment;
+    private TableFragment tableFragment;
+    private MapFragment mapFragment;
+
+//    private BankDetailsFragment bankDetailsFragment;
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listView = findViewById(R.id.listView);
 
-        //use adapater as bridge to connect arraylist and listview (UI & logic)
-        adapter = new MyAdapter(this, arrayList);
-        listView.setAdapter(adapter);
+        tts = new TextToSpeech(this, this);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            arrayList.add(new LineItem(20.4, "Crunchyroll Subscription", sdf.parse("2023-04-12"),false));
-            arrayList.add(new LineItem(18.21, "WSJ Subscription", sdf.parse("2033-04-12"), false));
-            arrayList.add(new LineItem(10.42, "Cereal", sdf.parse("2021-03-12"), false));
-            arrayList.add(new LineItem(2.40, "Donation to Homeless", sdf.parse("2022-01-12"), false));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
 
-        //CREATE TAB HOST
-        TabHost tabs = (TabHost) findViewById(R.id.tabhost);
-        tabs.setup();
-        TabHost.TabSpec spec;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.tab_layout);
 
-        //INITIALIZE TAB 1 - MONTHLY
-        spec = tabs.newTabSpec("tag1");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab1);           //add tab view content
-        spec.setIndicator("Monthly");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), getLifecycle());
 
-        //TAB 1 CHANGE LISTENER
-        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(String tabId) {
-                if (tabId.equals("tag1")) {
-                    // START NEW INTENT FOR MONTHLY TAB
-                    Intent intent = new Intent(getApplicationContext(), Monthly.class);
-                    startActivity(intent);
-                }
-            }
-        });
+        //add table fragment
+        tableFragment = new TableFragment();
 
-        //INITIALIZE TAB 2 - GOALS
-        spec = tabs.newTabSpec("tag2");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab2);           //add tab view content
-        spec.setIndicator("Goals");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        //add form fragment & respective listener
+        formFragment = new FormFragment();
+        formFragment.setFormSubmitListener(this); // Set the listener
 
-        //TAB 2 CHANGE LISTENER
-        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-        @Override
-        public void onTabChanged(String tabId) {
-            if (tabId.equals("tag2")) {
-                // START NEW INTENT FOR GOALS TAB
-                Intent intent = new Intent(getApplicationContext(), Goals.class);
-                startActivity(intent);
-            }
-        }
-        });
+        //add maps fragment
+        mapFragment = new MapFragment();
 
-        //INITIALIZE TAB 3 - REVIEW
-        spec = tabs.newTabSpec("tag3");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab3);           //add tab view content
-        spec.setIndicator("Review");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        //add bankDetails fragment
+//        bankDetailsFragment = new BankDetailsFragment();
 
-        //TAB 3 CHANGE LISTENER
-        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-        @Override
-        public void onTabChanged(String tabId) {
-            if (tabId.equals("tag3")) {
-                // START NEW INTENT FOR REVIEW TAB
-                Intent intent = new Intent(getApplicationContext(), Review.class);
-                startActivity(intent);
-            }
-        }
-        });
 
-        //INITALIZE TAB 4 - MAP
-        spec = tabs.newTabSpec("tag4");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab4);           //add tab view content
-        spec.setIndicator("Map");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        //add fragments to adapters
+        fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
+        fragmentAdapter.addFragment(formFragment, "Submission Form");
+        fragmentAdapter.addFragment(mapFragment, "ATM Maps");
+//        fragmentAdapter.addFragment(bankDetailsFragment, "Bank Details");
 
-        //TAB 4 CHANGE LISTENER
-        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-        @Override
-        public void onTabChanged(String tabId) {
-            if (tabId.equals("tag4")) {
-                // START NEW INTENT FOR MAP TAB
-                Intent intent = new Intent(getApplicationContext(), Map.class);
-                startActivity(intent);
-            }
-        }
-        });
 
+        viewPager.setAdapter(fragmentAdapter);
+
+        //connects tablayout to viewpager using the tablayoutmediator...
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
+                tab.setText(fragmentAdapter.getFragmentTitle(position))
+        );
+        tabLayoutMediator.attach();
     }
+
+    public void onFormSubmit(LineItem lineItem, boolean isExpense) {
+        tableFragment.updateTable(lineItem, isExpense);
+    }
+
+    public void switchToTab(int tabIndex) {
+        viewPager.setCurrentItem(tabIndex, true);
+    }
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(EasyPermissions.hasPermissions(this, perms)) {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language not supported");
+            } else {
+                tts.setSpeechRate(1.0f); // Set the speech rate
+                tts.setPitch(1.0f); // Set the pitch
+                speak("hello there! This is your personal finance planning application");
+                Log.e("TTS", "Spoken");
+            }
+        } else {
+            Log.e("TTS", "Initialization failed");
+        }
+    }
+
+    private void speak(String text) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "UtteranceId");
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
+    }
+
+
 }
+
+
