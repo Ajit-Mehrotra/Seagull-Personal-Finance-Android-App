@@ -1,19 +1,39 @@
 package com.example.seagull;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 // Main Activity class that hosts the ViewPager and TabLayout
 public class MainActivity extends AppCompatActivity implements FormSubmitListener{
 
-    //STUFF RELATING TO TABS
 
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    //STUFF RELATING TO TABS
+    LocationManager locationManager;
+    private Context mContext;
+    public MainActivity(Context context) {
+        mContext = context;
+    }
+    public MainActivity() {
+        // ...
+    }
+    public LocationManager getLocationManager() {
+        this.locationManager = locationManager;
+        return locationManager;
+    }
     private ViewPager2 viewPager;
     private FragmentAdapter fragmentAdapter;
     private TabLayout tabLayout;
@@ -31,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
 
@@ -68,7 +89,23 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     public void switchToTab(int tabIndex) {
         viewPager.setCurrentItem(tabIndex, true);
     }
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(EasyPermissions.hasPermissions(this, perms)) {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
 
 }
 
