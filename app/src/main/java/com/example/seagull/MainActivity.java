@@ -1,141 +1,116 @@
 package com.example.seagull;
 
-//ANDROIDX IMPORTS
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-//ANDROID IMPORTS
-import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
-import android.widget.TabHost;
-import android.widget.Toast;
-//EXTERNAL IMPORTS (PERMISSIONS & MAP)
-import com.google.android.gms.maps.SupportMapFragment;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+import androidx.viewpager2.widget.ViewPager2;
 
-    SupportMapFragment mapFragment = SupportMapFragment.newInstance();
-    FragmentManager fragmentManager = getSupportFragmentManager();
-    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-    private static MainActivity instance;
-    private final int REQUEST_LOCATION_PERMISSION = 1;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Locale;
 
+// Main Activity class that hosts the ViewPager and TabLayout
+public class MainActivity extends AppCompatActivity implements FormSubmitListener, TextToSpeech.OnInitListener {
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    //STUFF RELATING TO TABS
 
+    private ViewPager2 viewPager;
+    private FragmentAdapter fragmentAdapter;
+    private TabLayout tabLayout;
+
+    /* ViewPager2 swipes between fragments
+    FragmentAdapter is the adapter for ViewPager2 to manage all the fragments
+     TabLayout shows the tabs for the respective fragments*/
+
+    //FRAGMENTS
+    private FormFragment formFragment;
+    private TableFragment tableFragment;
+    private MapFragment mapFragment;
+    private TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
         setContentView(R.layout.activity_main);
-        requestLocationPermission();
-
-        TableFragment tableFragment = new TableFragment();
-        Map mapFragment = new Map();
-
-        //CREATE TAB HOST
-        TabHost tabs = (TabHost) findViewById(R.id.tabhost);
-        tabs.setup();
-        TabHost.TabSpec spec;
-
-        //INITIALIZE TAB 1 - TABLES
-        spec = tabs.newTabSpec("tag1");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) {
-                getSupportFragmentManager().beginTransaction().add(R.id.tab1, tableFragment).commit();
-                return findViewById(R.id.tab1);
-            }
-        });
-        spec.setIndicator("Tables");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
 
 
-
-        //INITIALIZE TAB 2 - GOALS
-        spec = tabs.newTabSpec("tag2");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab2);           //add tab view content
-        spec.setIndicator("Goals");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        tts = new TextToSpeech(this, this);
 
 
-        //INITIALIZE TAB 3 - REVIEW
-        spec = tabs.newTabSpec("tag3");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab3);           //add tab view content
-        spec.setIndicator("Review");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.tab_layout);
+
+        fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), getLifecycle());
+
+        //add table fragment
+        tableFragment = new TableFragment();
+
+        //add form fragment & respective listener
+        formFragment = new FormFragment();
+        formFragment.setFormSubmitListener(this); // Set the listener
+
+        //add maps fragment
+        mapFragment = new MapFragment();
+
+        //add fragments to adapters
+        fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
+        fragmentAdapter.addFragment(formFragment, "Submission Form");
+        fragmentAdapter.addFragment(mapFragment, "ATM Maps");
 
 
-        //INITALIZE TAB 4 - MAP
-        spec = tabs.newTabSpec("tag4");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) {
-                getSupportFragmentManager().beginTransaction().add(R.id.tab4, mapFragment).commit();
-                return findViewById(R.id.tab4);
-            }
-        });         //add tab view content
-        spec.setIndicator("Map");         //TAB DISPLAY
-        tabs.addTab(spec);                    //put tab in TabHost container
+        viewPager.setAdapter(fragmentAdapter);
 
-//
-//        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-//            @Override
-//            public void onTabChanged(String tabId) {
-//                // Your code for handling tab changes
-//                switch (tabId) {
-//                    case "tag1":
-//                        // Handle tab change to Tables
-//                        break;
-//                    case "tag2":
-//                        // Handle tab change to Goals
-//                        break;
-//                    case "tag3":
-//                        // Handle tab change to Review
-//                        break;
-//                    case "tag4":
-//                        Intent intent = new Intent(getApplicationContext(), Map.class);
-//                        //intent.putExtra("tabId", "tag1");
-//                        startActivity(intent);
-//                        break;
-//                }
-//            }
-//        });
-//
-
+        //connects tablayout to viewpager using the tablayoutmediator...
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
+                tab.setText(fragmentAdapter.getFragmentTitle(position))
+        );
+        tabLayoutMediator.attach();
     }
 
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    public void onFormSubmit(LineItem lineItem, boolean isExpense) {
+        tableFragment.updateTable(lineItem, isExpense);
     }
 
-    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
-    public void requestLocationPermission() {
-        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
-        if (EasyPermissions.hasPermissions(this, perms)) {
-            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+    public void switchToTab(int tabIndex) {
+        viewPager.setCurrentItem(tabIndex, true);
+    }
+
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = tts.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Language not supported");
+            } else {
+                tts.setSpeechRate(1.0f); // Set the speech rate
+                tts.setPitch(1.0f); // Set the pitch
+                speak("hello there! This is your personal finance planning application");
+                Log.e("TTS", "Spoken");
+            }
         } else {
-            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+            Log.e("TTS", "Initialization failed");
         }
     }
-    public static MainActivity getInstance() {
-        return instance;
+
+    private void speak(String text) {
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "UtteranceId");
     }
 
-    public void onTabChanged(int tabIndex) {
-        TabHost tabHost = findViewById(android.R.id.tabhost);
-        tabHost.setCurrentTab(tabIndex);
+    @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onDestroy();
     }
-    public SupportMapFragment getMapFragment() {
-        return mapFragment;
-    }
-
 
 }
+
+
