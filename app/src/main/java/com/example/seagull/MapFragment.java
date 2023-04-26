@@ -3,6 +3,7 @@ package com.example.seagull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -100,6 +101,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         mMap.setOnMarkerClickListener(marker -> {
 
             Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(thiscontext, WebActivity.class);
+            intent.putExtra("website", "https://www.bentley.edu");
+            startActivity(intent);
 
 
             return false;
@@ -160,6 +164,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         options.title("Locations");
         mMap.addMarker(options);
     }
+
 }
 
 

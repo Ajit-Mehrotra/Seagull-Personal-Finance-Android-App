@@ -79,6 +79,7 @@ String data;
                 markerOptions.title(vicinity);
                 markerOptions.position(latLng);
                 mMap.addMarker(markerOptions);
+
             }
 
 
