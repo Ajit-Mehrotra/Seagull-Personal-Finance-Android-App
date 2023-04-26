@@ -8,14 +8,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -32,7 +29,7 @@ public class FormFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_form, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_form, container, false);
 
         typeRadioGroup = rootView.findViewById(R.id.typeRadioGroup);
         titleEditText = rootView.findViewById(R.id.titleEditText);

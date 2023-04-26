@@ -11,17 +11,21 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 // Main Activity class that hosts the ViewPager and TabLayout
 public class MainActivity extends AppCompatActivity implements FormSubmitListener{
+
+    //STUFF RELATING TO TABS
+
     private ViewPager2 viewPager;
     private FragmentAdapter fragmentAdapter;
     private TabLayout tabLayout;
 
+    /* ViewPager2 swipes between fragments
+    FragmentAdapter is the adapter for ViewPager2 to manage all the fragments
+     TabLayout shows the tabs for the respective fragments*/
+
+    //FRAGMENTS
     private FormFragment formFragment;
     private TableFragment tableFragment;
-
-    //ViewPager2 swipes between fragments
-    //FragmentAdapter is the adapter for ViewPager2 to manage all the fragments
-    // TabLayout shows the tabs for the respective fragments
-
+    private MapFragment mapFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,13 +36,20 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
 
         fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), getLifecycle());
 
-
+        //add table fragment
         tableFragment = new TableFragment();
+
+        //add form fragment & respective listener
         formFragment = new FormFragment();
         formFragment.setFormSubmitListener(this); // Set the listener
 
+        //add maps fragment
+        mapFragment = new MapFragment();
+
+        //add fragments to adapters
         fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
         fragmentAdapter.addFragment(formFragment, "Submission Form");
+        fragmentAdapter.addFragment(mapFragment, "ATM Maps");
 
 
         viewPager.setAdapter(fragmentAdapter);
@@ -51,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     }
 
     public void onFormSubmit(LineItem lineItem, boolean isExpense) {
-        Log.e("bruh", "onFormSubmit Called - MainActivity");
-        Log.e("bruh", String.valueOf(isExpense) + lineItem.getTitle());
         tableFragment.updateTable(lineItem, isExpense);
     }
 

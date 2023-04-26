@@ -45,7 +45,7 @@ public class TableFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_tables, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_tables, container, false);
 
         expenseView = rootView.findViewById(R.id.expenseView);
         earningsView = rootView.findViewById(R.id.earningView);
