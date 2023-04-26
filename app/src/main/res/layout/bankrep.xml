@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bankrep"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10sp"
+    android:layout_gravity="center"
+    >
+    <TextView
+        android:id="@+id/tvRepName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Representative Name: "
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvRepEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Representative Email: "
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvRepPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Representative Phone: "
+        android:textStyle="bold"
+        android:textSize="16sp" />
+
+    <!-- Create a Button for sending email -->
+    <Button
+        android:id="@+id/emailButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Email" />
+
+    <!-- Create a Button for sending SMS -->
+    <Button
+        android:id="@+id/smsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send SMS" />
+</LinearLayout>
