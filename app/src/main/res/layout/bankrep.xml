@@ -30,14 +30,14 @@
         android:textStyle="bold"
         android:textSize="16sp" />
 
-    <!-- Create a Button for sending email -->
+    <!-- EMAIL BUTTON-->
     <Button
         android:id="@+id/emailButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send Email" />
 
-    <!-- Create a Button for sending SMS -->
+    <!-- SMS BUTTON-->
     <Button
         android:id="@+id/smsButton"
         android:layout_width="wrap_content"

@@ -15,6 +15,7 @@
     import android.widget.AdapterView;
     import android.widget.ArrayAdapter;
     import android.widget.Button;
+    import android.widget.ListView;
     import android.widget.Spinner;
     import android.widget.TextView;
 
@@ -74,76 +75,96 @@
             helper.addRep(rep7);
             helper.addRep(rep8);
 
+
+            //SPINNER
             HashSet<String> banks = helper.getBanks();
             ArrayList<String> bankList = new ArrayList<>(banks);
-
             Spinner spin = (Spinner) rootView.findViewById(R.id.spinner);
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), custom_spinner, bankList); // or getActivity() if used in a fragment
             adapter.setDropDownViewResource(R.layout.custom_dropdown);
             spin.setAdapter(adapter);
-            spin.setSelection(adapter.NO_SELECTION, true);
 
-
-            //RETURN ALL BANK REPS
             ArrayList<BankRep> bankRepList = helper.getJoinData();
-
+            ArrayList<BankRep> bankrep2 = new ArrayList<BankRep>();
             spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                     String bankName = (String) parent.getItemAtPosition(position);
                     for (BankRep bankRep : bankRepList) {
                         if (bankRep.getBankName().equals(bankName)) {
-                            View bankRepView = inflater.inflate(R.layout.bankrep, parent, false);
-
-
-                            // Find the TextView elements in the XML layout
-                            TextView tvRepName = bankRepView.findViewById(R.id.tvRepName);
-                            TextView tvRepEmail = bankRepView.findViewById(R.id.tvRepEmail);
-                            TextView tvRepPhone = bankRepView.findViewById(R.id.tvRepPhone);
-
-                            Button emailButton = bankRepView.findViewById(R.id.emailButton);
-                            Button smsButton = bankRepView.findViewById(R.id.smsButton);
-
-                            // Set the data to the TextView elements
-                            tvRepName.setText("Representative Name: " + bankRep.getRepName());
-                            tvRepEmail.setText("Representative Email: " + bankRep.getEmail());
-                            tvRepPhone.setText("Representative Phone: " + bankRep.getPhone());
-
-                            emailButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Create an intent to send an email
-                                    Intent intent = new Intent(Intent.ACTION_SENDTO);
-                                    intent.setData(Uri.parse("mailto:")); // Only email apps should handle this
-                                    intent.putExtra(Intent.EXTRA_EMAIL, new String[]{bankRep.getEmail()}); // Email recipient(s)
-                                    intent.putExtra(Intent.EXTRA_SUBJECT, "Inquiry to Seagull Rep!"); // Email subject
-                                    intent.putExtra(Intent.EXTRA_TEXT, "This is a submission for inquiry on the Seagull app."); // Email body
-                                    startActivity(intent);
-
-                                }
-                            });
-
-                            smsButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Create an intent to send an SMS
-                                    Intent intent = new Intent(Intent.ACTION_SENDTO);
-                                    intent.setData(Uri.parse("smsto:" +(bankRep.getPhone()))); // SMS recipient(s)
-                                    intent.putExtra("sms_body", "This is an inquiry text!"); // SMS body
-                                        startActivity(intent);
-                                }
-                            });
+                            bankrep2.add(bankRep);
                         }
                     }
-                }
-
+                    // Populate the ListView with reps
+                   ListView listView = rootView.findViewById(R.id.bankreps);
+                   ArrayAdapter<BankRep> repAdapter = new ArrayAdapter<>(getContext(), R.layout.bankrep, bankrep2);
+                   listView.setAdapter(repAdapter);
+               }
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
+                    // Do nothing
                 }
             });
-        return rootView;
+
+            return rootView;
         }
 
-    }
+        @Override
+        public void onDestroyView() {
+            super.onDestroyView();
+            // Close the database here
+            if (db != null && db.isOpen()) {
+                db.close();
+            }
+        }
+
+
+
+    //                            ArrayAdapter<BankRep> adapter = new ArrayAdapter<BankRep>(this, R.layout.bankrep) {
+//                                @Override
+//                                public View getView(int position, View convertView, ViewGroup parent) {
+//                                    View view = super.getView(position, convertView, parent);
+//                                    TextView tvRepName = view.findViewById(R.id.tvRepName);
+//                                    TextView tvRepEmail = view.findViewById(R.id.tvRepEmail);
+//                                    TextView tvRepPhone = view.findViewById(R.id.tvRepPhone);
+//
+//                                    Button emailButton = view.findViewById(R.id.emailButton);
+//                                    Button smsButton = view.findViewById(R.id.smsButton);
+//
+//
+//                                    // Set the data to the TextView elements
+//                                    tvRepName.setText("Representative Name: " + bankRep.getRepName());
+//                                    tvRepEmail.setText("Representative Email: " + bankRep.getEmail());
+//                                    tvRepPhone.setText("Representative Phone: " + bankRep.getPhone());
+//
+//                                    emailButton.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            // Create an intent to send an email
+//                                            Intent intent = new Intent(Intent.ACTION_SENDTO);
+//                                            intent.setData(Uri.parse("mailto:")); // Only email apps should handle this
+//                                            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{bankRep.getEmail()}); // Email recipient(s)
+//                                            intent.putExtra(Intent.EXTRA_SUBJECT, "Inquiry to Seagull Rep!"); // Email subject
+//                                            intent.putExtra(Intent.EXTRA_TEXT, "This is a submission for inquiry on the Seagull app."); // Email body
+//                                            startActivity(intent);
+//
+//                                        }
+//                                    });
+//
+//                                    smsButton.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            // Create an intent to send an SMS
+//                                            Intent intent = new Intent(Intent.ACTION_SENDTO);
+//                                            intent.setData(Uri.parse("smsto:" + (bankRep.getPhone()))); // SMS recipient(s)
+//                                            intent.putExtra("sms_body", "This is an inquiry text!"); // SMS body
+//                                            startActivity(intent);
+//                                        }
+//                                    }
+//                                }
+//                            });
+//
+//                                }
 
 

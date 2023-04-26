@@ -68,13 +68,13 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         //add form fragment & respective listener
         formFragment = new FormFragment();
         formFragment.setFormSubmitListener(this); // Set the listener
-        RepFragment repFragment = new RepFragment();
+//        RepFragment repFragment = new RepFragment();
 
 
         //add fragments to adapters
         fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
         fragmentAdapter.addFragment(formFragment, "Submission Form");
-        fragmentAdapter.addFragment(repFragment, "Seagull Representatives");
+//        fragmentAdapter.addFragment(repFragment, "Seagull Representatives");
 
 
         viewPager.setAdapter(fragmentAdapter);
