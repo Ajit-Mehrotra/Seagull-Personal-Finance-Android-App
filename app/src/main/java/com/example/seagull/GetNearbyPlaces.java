@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class GetNearbyPlaces extends AsyncTask<Object,String,String> {
 
@@ -28,6 +29,7 @@ public class GetNearbyPlaces extends AsyncTask<Object,String,String> {
 StringBuilder stringBuilder;
 String data;
     JSONObject jsonObject;
+    ArrayList<String> placeIds = new ArrayList<String>();
     @Override
     protected String doInBackground(Object... params) {
         mMap = (GoogleMap)params[0];
@@ -61,6 +63,8 @@ String data;
             JSONObject parentObject = new JSONObject(s);
             JSONArray resultsArray = parentObject.getJSONArray("results");
             Log.e("bruh", String.valueOf(resultsArray));
+
+
             int i;
             for (i = 0; i < resultsArray.length()-1; i++) {
                 jsonObject = resultsArray.getJSONObject(i);
@@ -71,6 +75,9 @@ String data;
                 String lon = locationObject.getString("lng");
 
                 JSONObject nameObject = resultsArray.getJSONObject(i);
+                String ID = nameObject.getString("reference");
+                placeIds.add(ID);
+                Log.e("bruhIDS", String.valueOf(placeIds));
                 String bank = nameObject.getString("name");
                 String vicinity = nameObject.getString("vicinity");
 
@@ -89,5 +96,8 @@ String data;
         }
 
 
+    }
+    public ArrayList<String> getPlaceIds() {
+        return placeIds;
     }
 }
