@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 
@@ -46,9 +47,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
 
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, EasyPermissions.PermissionCallbacks {
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private GoogleMap mMap;
     //private TextView webViewText;
 
@@ -99,6 +105,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        checkLocationPermission();
         mMap.setMyLocationEnabled(true);
         client = new GoogleApiClient.Builder(thiscontext).addApi(LocationServices.API).addConnectionCallbacks(this).addOnConnectionFailedListener(this).build();
         client.connect();
@@ -159,6 +166,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             return false;
         });
     }
+    private void checkLocationPermission() {
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(requireActivity(), perms)) {
+            enableMyLocation();
+        } else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission to use the app",
+                    LOCATION_PERMISSION_REQUEST_CODE, perms);
+        }
+    }
 
 
     @Override
@@ -170,8 +186,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
+//               public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                                                      int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
@@ -228,6 +244,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleA
         }
         return null;
     }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            enableMyLocation();
+        }
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+                new AppSettingsDialog.Builder(this).build().show();
+            } else {
+                checkLocationPermission();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            checkLocationPermission();
+        }
+    }
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+
+
 }
 
 
