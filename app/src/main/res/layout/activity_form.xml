@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/formLayout"
@@ -8,16 +10,9 @@
         android:orientation="vertical"
         android:padding="16dp"
         xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Form">
+    android:fillViewport="true"
+    tools:context=".FormFragment">
         >
-
-    <TextView
-        android:id="@+id/formTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Earning/Expense Form"
-        android:textAlignment="center"
-        android:textSize="34sp" />
 
         <TextView
             android:id="@+id/typeTextView"
@@ -95,5 +90,5 @@
             android:onClick="onSubmitClicked" />
 
     </LinearLayout>
-
+</ScrollView>
 
