@@ -3,7 +3,9 @@ package com.example.seagull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     private FormFragment formFragment;
     private TableFragment tableFragment;
     private MapFragment mapFragment;
+
+    private BankDetailsFragment bankDetailsFragment;
     private TextToSpeech tts;
 
     @Override
@@ -78,10 +82,14 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         //add maps fragment
         mapFragment = new MapFragment();
 
+        //add bankDetails fragment
+        bankDetailsFragment = new BankDetailsFragment();
+
         //add fragments to adapters
         fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
         fragmentAdapter.addFragment(formFragment, "Submission Form");
         fragmentAdapter.addFragment(mapFragment, "ATM Maps");
+        fragmentAdapter.addFragment(bankDetailsFragment, "Bank Details");
 
 
         viewPager.setAdapter(fragmentAdapter);
@@ -147,7 +155,11 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         }
         super.onDestroy();
     }
-
+    public void openDial(View view) {
+        Uri uri = Uri.parse("tel:7818912000");
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+    }
 }
 
 
