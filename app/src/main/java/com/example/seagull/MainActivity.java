@@ -2,6 +2,7 @@ package com.example.seagull;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,9 +12,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+
+import android.content.Context;
+import android.content.Intent;
+import android.location.LocationManager;
+import android.net.Uri;
+
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.viewpager2.widget.ViewPager2;
@@ -24,10 +36,28 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.Calendar;
 import java.util.Locale;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 // Main Activity class that hosts the ViewPager and TabLayout
 public class MainActivity extends AppCompatActivity implements FormSubmitListener, TextToSpeech.OnInitListener {
 
-    //TABS VARIABLES
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    //STUFF RELATING TO TABS
+    LocationManager locationManager;
+    private Context mContext;
+    public MainActivity(Context context) {
+        mContext = context;
+    }
+    public MainActivity() {
+        // ...
+    }
+    public LocationManager getLocationManager() {
+        this.locationManager = locationManager;
+        return locationManager;
+    }
+
     private ViewPager2 viewPager;
     private FragmentAdapter fragmentAdapter;
     private TabLayout tabLayout;
@@ -39,8 +69,11 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     //FRAGMENTS
     private FormFragment formFragment;
     private TableFragment tableFragment;
-//    private MapFragment mapFragment;
-    //TTS
+
+    private MapFragment mapFragment;
+
+//    private BankDetailsFragment bankDetailsFragment;
+
     private TextToSpeech tts;
     //NOTIFICATION
     private NotificationManager mManager;
@@ -57,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         tts = new TextToSpeech(this, this);
 
 
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         viewPager = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
 
@@ -71,10 +105,19 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
 //        RepFragment repFragment = new RepFragment();
 
 
+        //add bankDetails fragment
+//        bankDetailsFragment = new BankDetailsFragment();
+
+
         //add fragments to adapters
         fragmentAdapter.addFragment(tableFragment, "Expenses/Earnings");
         fragmentAdapter.addFragment(formFragment, "Submission Form");
+
 //        fragmentAdapter.addFragment(repFragment, "Seagull Representatives");
+
+        fragmentAdapter.addFragment(mapFragment, "ATM Maps");
+//        fragmentAdapter.addFragment(bankDetailsFragment, "Bank Details");
+
 
 
         viewPager.setAdapter(fragmentAdapter);
@@ -122,7 +165,23 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
     public void switchToTab(int tabIndex) {
         viewPager.setCurrentItem(tabIndex, true);
     }
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {android.Manifest.permission.ACCESS_FINE_LOCATION};
+        if(EasyPermissions.hasPermissions(this, perms)) {
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
 
     @Override
     public void onInit(int status) {
@@ -154,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements FormSubmitListene
         showNotification(getApplicationContext());
         super.onDestroy();
     }
+
 
     // Broadcast Receiver for handling notifications
     public static class NotificationReceiver extends BroadcastReceiver {
