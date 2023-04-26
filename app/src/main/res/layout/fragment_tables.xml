@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".TableFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/light_grey"
@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Expenses" />
+
     <ListView
         android:id="@+id/expenseView"
         android:layout_width="match_parent"
@@ -31,5 +32,7 @@
         android:id="@+id/earningView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

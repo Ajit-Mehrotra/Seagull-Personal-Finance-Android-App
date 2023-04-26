@@ -1,5 +1,7 @@
 package com.example.seagull;
 
+import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +28,9 @@ public class TableFragment extends Fragment {
     private ExpensesAdapter expenseAdapter;
     private EarningsAdapter earningsAdapter;
 
+    private TextView expenses;
+    private TextView earnings;
+
     public TableFragment() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -42,6 +48,7 @@ public class TableFragment extends Fragment {
             throw new RuntimeException(e);
         }
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,6 +64,11 @@ public class TableFragment extends Fragment {
         earningsAdapter = new EarningsAdapter(getActivity(), earningsList);
         earningsView.setAdapter(earningsAdapter);
 
+        earnings = rootView.findViewById(R.id.earningTextView);
+        expenses = rootView.findViewById(R.id.expenseTextView);
+
+        animateTitle();
+
         return rootView;
     }
 
@@ -65,7 +77,7 @@ public class TableFragment extends Fragment {
         Log.e("bruh", "UpdateTable - TableFragment");
         if (isExpense) {
             expenseList.add(lineItem);
-            Log.e("bruh", expenseList.get(expenseList.size()-1).getTitle());
+            Log.e("bruh", expenseList.get(expenseList.size() - 1).getTitle());
             expenseAdapter.notifyDataSetChanged();
         } else {
             earningsList.add(lineItem);
@@ -97,4 +109,33 @@ public class TableFragment extends Fragment {
         listView.setLayoutParams(layoutParams);
         listView.requestLayout();
     }
+
+    private void animateTitle() {
+        // Create a new ValueAnimator object
+        ValueAnimator animator = ValueAnimator.ofArgb(Color.BLACK, Color.RED);
+
+        // Set the duration of the animation
+        animator.setDuration(1000);
+
+        // Set the repeat mode and count of the animation
+        animator.setRepeatMode(ValueAnimator.REVERSE);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+
+        // Set the update listener to change the text color of the title
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int color = (int) animation.getAnimatedValue();
+                earnings.setTextColor(color);
+                expenses.setTextColor(color);
+            }
+
+
+
+        });
+
+        // Start the animation
+        animator.start();
+    }
+
 }
