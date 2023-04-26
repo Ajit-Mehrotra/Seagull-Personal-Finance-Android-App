@@ -34,7 +34,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class Map extends MainActivity implements OnMapReadyCallback {
+public class Map extends Fragment {
     private GoogleMap mMap;
     private static final LatLng University_of_Pacific = new LatLng(37.7826801839483, -122.40561381000833);
     private GoogleApiClient mGoogleApiClient;

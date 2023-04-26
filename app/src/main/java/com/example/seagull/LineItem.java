@@ -39,4 +39,3 @@ public class LineItem {
         this.amount = amount;
     }
 }
-

@@ -1,16 +1,17 @@
 package com.example.seagull;
 
+//ANDROIDX IMPORTS
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
+//ANDROID IMPORTS
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TabHost;
 import android.widget.Toast;
-
+//EXTERNAL IMPORTS (PERMISSIONS & MAP)
 import com.google.android.gms.maps.SupportMapFragment;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         requestLocationPermission();
 
         TableFragment tableFragment = new TableFragment();
+        Map mapFragment = new Map();
 
         //CREATE TAB HOST
         TabHost tabs = (TabHost) findViewById(R.id.tabhost);
@@ -71,34 +73,39 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //INITALIZE TAB 4 - MAP
         spec = tabs.newTabSpec("tag4");   //CREATE NEW TAB SPECIFICATION
-        spec.setContent(R.id.tab4);           //add tab view content
+        spec.setContent(new TabHost.TabContentFactory() {
+            public View createTabContent(String tag) {
+                getSupportFragmentManager().beginTransaction().add(R.id.tab4, mapFragment).commit();
+                return findViewById(R.id.tab4);
+            }
+        });         //add tab view content
         spec.setIndicator("Map");         //TAB DISPLAY
         tabs.addTab(spec);                    //put tab in TabHost container
 
-
-        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(String tabId) {
-                // Your code for handling tab changes
-                switch (tabId) {
-                    case "tag1":
-                        // Handle tab change to Tables
-                        break;
-                    case "tag2":
-                        // Handle tab change to Goals
-                        break;
-                    case "tag3":
-                        // Handle tab change to Review
-                        break;
-                    case "tag4":
-                        Intent intent = new Intent(getApplicationContext(), Map.class);
-                        intent.putExtra("tabId", "tag1");
-                        startActivity(intent);
-                        break;
-                }
-            }
-        });
-
+//
+//        tabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+//            @Override
+//            public void onTabChanged(String tabId) {
+//                // Your code for handling tab changes
+//                switch (tabId) {
+//                    case "tag1":
+//                        // Handle tab change to Tables
+//                        break;
+//                    case "tag2":
+//                        // Handle tab change to Goals
+//                        break;
+//                    case "tag3":
+//                        // Handle tab change to Review
+//                        break;
+//                    case "tag4":
+//                        Intent intent = new Intent(getApplicationContext(), Map.class);
+//                        //intent.putExtra("tabId", "tag1");
+//                        startActivity(intent);
+//                        break;
+//                }
+//            }
+//        });
+//
 
     }
 

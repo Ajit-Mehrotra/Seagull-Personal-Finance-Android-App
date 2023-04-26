@@ -3,13 +3,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_grey">#FFF2F2F2</color>
-
+    <!--CUSTOM BLUES-->
     <color name="blue1">#FF447EF2</color>
     <color name="blue2">#FF5E90F2</color>
-
+    <!--CUSTOM ORANGES-->
     <color name="orange1">#FFF29F05</color>
     <color name="orange2">#FFF27405</color>
-
+    <!--CUSTOM RED AND GREEN-->
     <color name="red">#FFD21317</color>
     <color name="green">#FF20D213</color>
 
