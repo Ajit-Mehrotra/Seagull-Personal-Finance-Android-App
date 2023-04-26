@@ -63,12 +63,12 @@ public class SQLHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // Method to add a new bank
-    public void addBank(Bank bank) {
+    // Method to add a new bankSQL
+    public void addBank(BankSQL bankSQL) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_BANK_NAME, bank.getName());
-        values.put(COL_BANK_WEBSITE, bank.getWebsite());
+        values.put(COL_BANK_NAME, bankSQL.getName());
+        values.put(COL_BANK_WEBSITE, bankSQL.getWebsite());
         db.insert(TABLE_BANK, null, values);
         db.close();
     }

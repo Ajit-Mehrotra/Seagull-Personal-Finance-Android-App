@@ -3,40 +3,29 @@
     import static com.example.seagull.R.layout.custom_spinner;
 
     import android.content.Context;
-    import android.content.Intent;
-    import android.database.SQLException;
     import android.database.sqlite.SQLiteDatabase;
-    import android.net.Uri;
     import android.os.Bundle;
-    import android.util.Log;
     import android.view.LayoutInflater;
     import android.view.View;
     import android.view.ViewGroup;
     import android.widget.AdapterView;
     import android.widget.ArrayAdapter;
-    import android.widget.Button;
     import android.widget.ListView;
     import android.widget.Spinner;
-    import android.widget.TextView;
 
     import androidx.annotation.NonNull;
     import androidx.annotation.Nullable;
     import androidx.fragment.app.Fragment;
-
-    import com.example.seagull.R;
-    import com.example.seagull.SQLHelper;
-    import com.example.seagull.BankRep;
-    import com.example.seagull.Rep;
 
     import java.util.ArrayList;
     import java.util.HashSet;
 
     public class RepFragment extends Fragment {
 
-        Bank bank1 = new Bank(1,"Citi", "www.citi.com");
-        Bank bank2 = new Bank(2,"Bank of America", "www.bankofamerica.com");
-        Bank bank3 = new Bank(3,"US Bank", "www.usbank.com");
-        Bank bank4 = new Bank(4,"PNC Bank", "www.pnc.com");
+        BankSQL bankSQL1 = new BankSQL(1,"Citi", "www.citi.com");
+        BankSQL bankSQL2 = new BankSQL(2,"BankSQL of America", "www.bankofamerica.com");
+        BankSQL bankSQL3 = new BankSQL(3,"US BankSQL", "www.usbank.com");
+        BankSQL bankSQL4 = new BankSQL(4,"PNC BankSQL", "www.pnc.com");
         Rep rep1 = new Rep(1001,"John Doe", 1, "jdoe@citi.com", 123456789);
         Rep rep2 = new Rep(1002,"Mary Doe", 1, "mdoe@citi.com", 123456789);
         Rep rep3 = new Rep(1003,"Harry Potter", 2, "hpotter@bofa.com", 123456789);
@@ -61,10 +50,10 @@
             View rootView = inflater.inflate(R.layout.fragment_rep, container, false);
 
 
-            helper.addBank(bank1);
-            helper.addBank(bank2);
-            helper.addBank(bank3);
-            helper.addBank(bank4);
+            helper.addBank(bankSQL1);
+            helper.addBank(bankSQL2);
+            helper.addBank(bankSQL3);
+            helper.addBank(bankSQL4);
 
             helper.addRep(rep1);
             helper.addRep(rep2);

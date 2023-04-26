@@ -1,17 +1,17 @@
 package com.example.seagull;
 
-public class Bank {
+public class BankSQL {
     private int id;
     private String name;
     private String website;
 
     // Constructor
-    public Bank(int id, String n, String w) {
+    public BankSQL(int id, String n, String w) {
         this.id = id;
         this.name = n;
         this.website = w;
     }
-    public Bank(String n, String w) {
+    public BankSQL(String n, String w) {
         super();
         this.name = n;
         this.website = w;
