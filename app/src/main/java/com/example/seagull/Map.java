@@ -8,6 +8,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +23,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
-
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.PlaceFilter;
+import com.google.android.gms.location.places.PlaceLikelihood;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,13 +42,19 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.model.TypeFilter;
+
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 public class Map extends MainActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-    private static final LatLng University_of_Pacific = new LatLng(37.7826801839483, -122.40561381000833);
-    private GoogleApiClient mGoogleApiClient;
-
-
+    String placeId = "PLACE_ID_HERE";
+    PlaceFilter filter = new PlaceFilter();
+    GoogleApiClient mGoogleApiClient;
+    double latitude;
+    double longitude;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -48,7 +63,8 @@ public class Map extends MainActivity implements OnMapReadyCallback {
         MainActivity mainActivityInstance = MainActivity.getInstance();
         String tabId = getIntent().getStringExtra("tabId");
         fragmentTransaction.add(R.id.tab4, mapFragment).commit();
-        Toast.makeText(Map.this, "Hello world", Toast.LENGTH_LONG).show();
+    //    PlacesClient placesClient = Places.createClient(this);
+
         mapFragment.getMapAsync(this);
         Button backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -61,12 +77,11 @@ public class Map extends MainActivity implements OnMapReadyCallback {
 
             }
         });
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .build();
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Places.GEO_DATA_API)
+//                .addApi(Places.PLACE_DETECTION_API)
+//                .build();
 
-        mGoogleApiClient.connect();
 
     }
 
@@ -84,7 +99,7 @@ public class Map extends MainActivity implements OnMapReadyCallback {
             public void onLocationChanged(Location location) {
                 // Move the map to the user's location
                 LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 12));
                 // Remove location updates after the first location is received
                 LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 locationManager.removeUpdates(this);
@@ -112,5 +127,50 @@ public class Map extends MainActivity implements OnMapReadyCallback {
                     }
                 }
         );
+        getNearbyATMs();
+    }
+    private void getNearbyATMs() {
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                        // Handle connection success
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                        // Handle connection suspension
+                    }
+                })
+                .addOnConnectionFailedListener(connectionResult -> {
+                    // Handle connection failure
+                })
+                .build();
+
+        mGoogleApiClient.connect();
+        LatLng currentLocation = new LatLng(latitude, longitude);
+
+        @SuppressLint("MissingPermission") PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi.getCurrentPlace(mGoogleApiClient, null);
+        result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+            @Override
+            public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    Place place = placeLikelihood.getPlace();
+                    List<Integer> placeTypes = place.getPlaceTypes();
+                    if (placeTypes.contains(Place.TYPE_BANK)) {
+                        // This is an ATM, add marker on map
+                        LatLng latLng = place.getLatLng();
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(latLng)
+                                .title(place.getName().toString());
+                        mMap.addMarker(markerOptions);
+                    }
+                }
+                likelyPlaces.release();
+            }
+        });
+
     }
 }
