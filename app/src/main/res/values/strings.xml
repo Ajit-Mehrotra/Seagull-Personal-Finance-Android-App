@@ -1,12 +1,4 @@
 <resources>
     <string name="app_name">Seagull</string>
-    <string name="title_monthly">Monthly Activity</string>
-    <string name="title_goals">Financial Goals</string>
-    <string name="title_map">Financial Map</string>
-    <string name="title_review">Goal Review</string>
-    <string name="title_activity_seagull">Seagull</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

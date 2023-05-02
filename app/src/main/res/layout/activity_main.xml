@@ -11,13 +11,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorColor="@color/design_default_color_primary" />
+        app:tabIndicatorColor="@color/orange2"
+        app:tabSelectedTextColor="@color/orange1"
+        app:tabTextColor="#444444"
+        style="@style/MyTabLayout"
+        android:background="@color/light_grey"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+        app:layout_constraintTop_toBottomOf="@id/tab_layout"
+        android:background="@color/light_grey"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

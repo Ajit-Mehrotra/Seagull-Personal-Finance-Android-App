@@ -3,36 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#EAD7D7">
+    android:background="@color/light_grey">
 
 
     <TextView
         android:id="@+id/bankName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bank Details" />
+        android:text="Bank Details"
+        android:textAlignment="center"
+        android:textColor="#555555"
+        android:textSize="25dp" />
+
     <TextView
         android:id="@+id/bankPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bank Phone" />
+        android:text="Bank Phone"
+        android:textColor="#999999"
+        android:textSize="16dp"/>
+
     <TextView
         android:id="@+id/bankAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bank Address" />
+        android:text="Bank Address"
+        android:textColor="#999999"
+        android:textSize="16dp" />
 
     <Button
         android:id="@+id/dialBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="openDialer"
-        android:text="Dial" />
+        android:text="Dial"
+        android:backgroundTint="@color/green"
+        android:textColor="@color/black"/>
 
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="20dp"/>
+        android:layout_margin="20dp" />
 
 </LinearLayout>

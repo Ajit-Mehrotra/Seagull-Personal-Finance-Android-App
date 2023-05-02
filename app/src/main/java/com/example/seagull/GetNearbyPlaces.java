@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -21,14 +22,19 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
-
-    GoogleMap mMap;
+    //LOG TAG
+    private static final String TAG = "GET_NEARBY";
+    //STRING
     String url;
+    String data;
+    StringBuilder stringBuilder;
+    //IO
     InputStream is;
     BufferedReader br;
-    StringBuilder stringBuilder;
-    String data;
+    //MAP & JSON
+    GoogleMap mMap;
     JSONObject jsonObject;
+    //ARRAYLIST
     ArrayList<String> placeIds = new ArrayList<String>();
     ArrayList<Bank> banks = new ArrayList<>();
 
@@ -38,22 +44,23 @@ public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
         url = (String) params[1];
 
         try {
+            //HTTP URL CONNECTION
             URL myurl = new URL(url);
             HttpURLConnection httpURLConnection = (HttpURLConnection) myurl.openConnection();
             httpURLConnection.connect();
+
             is = httpURLConnection.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
+
             String line = "";
             stringBuilder = new StringBuilder();
             while ((line = br.readLine()) != null) {
                 stringBuilder.append(line);
             }
             data = stringBuilder.toString();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        }   catch (MalformedURLException e) {throw new RuntimeException(e);}
+            catch (IOException e) {throw new RuntimeException(e);}
 
         return data;
     }
@@ -62,125 +69,115 @@ public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
     protected void onPostExecute(String s) {
 
         try {
+            //JSON ARRAY
             JSONObject parentObject = new JSONObject(s);
             JSONArray resultsArray = parentObject.getJSONArray("results");
-            Log.e("bruh", String.valueOf(resultsArray));
+            Log.e(TAG, String.valueOf(resultsArray));
 
-
-            int i;
-            for (i = 0; i < resultsArray.length() - 1; i++) {
+            for (int i = 0; i < resultsArray.length() - 1; i++) {
+                //GET JSON OBJECT
                 jsonObject = resultsArray.getJSONObject(i);
-                Log.e("bruh", String.valueOf(jsonObject));
+                Log.e(TAG, String.valueOf(jsonObject));
                 JSONObject locationObject = jsonObject.getJSONObject("geometry").getJSONObject("location");
 
+                //LATITUDE & LONGITUDE
                 String lat = locationObject.getString("lat");
                 String lon = locationObject.getString("lng");
 
-                JSONObject nameObject = resultsArray.getJSONObject(i);
-                String ID = nameObject.getString("reference");
+                String ID = jsonObject.getString("reference");
                 placeIds.add(ID);
-                Log.e("bruhIDS", String.valueOf(placeIds));
-                String bank = nameObject.getString("name");
-                String vicinity = nameObject.getString("vicinity");
+                Log.e(TAG, String.valueOf(placeIds));
+
+                String bank = jsonObject.getString("name");
+                String vicinity = jsonObject.getString("vicinity");
 
                 LatLng latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+
+                //MARKERS
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.title(vicinity);
                 markerOptions.position(latLng);
+                markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bank));
                 mMap.addMarker(markerOptions).setSnippet(ID);
 
             }
-            for (String e : placeIds
-            )
-                Log.e("reference", e);
-            {
 
-            }
+            for (String e : placeIds) Log.i(TAG, "Reference" + e);
 
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+
+        } catch (JSONException e) {throw new RuntimeException(e);}
 
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                Log.e("bruh", "RUNNING WOHOO");
+                Log.i(TAG, "Runnable started!");
                 try {
-                    for (String id : placeIds
-                    ) {
+                    for (String id : placeIds) {
 
+                        //API REQUEST URL
+                        String url =    "https://maps.googleapis.com/maps/api/place/details/json?" +
+                                        "place_id=" + id +
+                                        "&fields=website,name,formatted_phone_number,formatted_address" +
+                                        "&key=AIzaSyATGMGc25BNLlAzllIQLZULVtFt59IQ10E";
 
-                        // create the URL for the API request
-                        String url = "https://maps.googleapis.com/maps/api/place/details/json?" +
-                                "place_id=" + id +
-                                "&fields=website,name,formatted_phone_number,formatted_address" +
-                                "&key=AIzaSyATGMGc25BNLlAzllIQLZULVtFt59IQ10E";
-
-                        // create a new HttpURLConnection object
+                        //HTTP URL CONNECTION
                         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                         connection.setRequestMethod("GET");
 
-                        // get the response from the server
+                        //SERVER RESPONSE
                         InputStream inputStream = connection.getInputStream();
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
                         StringBuilder builder = new StringBuilder();
                         String line;
-                        while ((line = reader.readLine()) != null) {
-                            builder.append(line);
-                        }
+
+                        while ((line = reader.readLine()) != null) {builder.append(line);}
                         String response = builder.toString();
-                        Log.e("bruh", "RUNNING WOHOO");
-                        // parse the JSON response
+
+                        Log.i(TAG, "Response Running");
+
+                        //PARSE JSON
                         JSONObject json = new JSONObject(response);
                         JSONObject result = json.getJSONObject("result");
 
-                        // extract the values of the fields
+                        //EXTRACT FIELD VALUES
 
                         Bank newBank = new Bank(id);
 
                         try {
                             String name = result.getString("name");
                             newBank.setName(name);
-                        } catch (Exception e) {
-
-                        }
+                        } catch (Exception e) {Log.e(TAG,"Name set exception caught");}
 
                         try {
                             String formattedAddress = result.getString("formatted_address");
                             newBank.setAddress(formattedAddress);
-                        } catch (Exception e) {
+                        } catch (Exception e) {Log.e(TAG,"Address set exception caught");}
 
-                        }
                         try {
                             String formattedPhoneNumber = result.getString("formatted_phone_number");
                             newBank.setPhone(formattedPhoneNumber);
-                        } catch (Exception e) {
+                        } catch (Exception e) {Log.e(TAG,"Phone set exception caught");}
 
-                        }
                         try {
                             String website = result.getString("website");
                             newBank.setWebsite(website);
-                        } catch (Exception e) {
+                        } catch (Exception e) {Log.e(TAG,"Website set exception caught");}
 
-                        }
                         banks.add(newBank);
-                        // update the UI with the JSON data
+
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception e) {e.printStackTrace();}
             }
+
         }).start();
 
-
     }
 
-    public ArrayList<String> getPlaceIds() {
-        return placeIds;
-    }
-    public ArrayList<Bank> getBanks() {
-        return banks;
-    }
+    public ArrayList<String> getPlaceIds() {return placeIds;}
+
+    public ArrayList<Bank> getBanks() {return banks;}
+
 }
