@@ -17,42 +17,50 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class FormFragment extends Fragment {
+    //LOG TAG
+    private static final String TAG = "FORM_FRAG";
+    //UI ELEMENTS
     private RadioGroup typeRadioGroup;
     private EditText titleEditText;
     private EditText amountEditText;
     private DatePicker datePicker;
 
+    //FORM LISTENER
     private FormSubmitListener formSubmitListener;
     public void setFormSubmitListener(FormSubmitListener formSubmitListener) {
         this.formSubmitListener = formSubmitListener;
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //INFLATER
         View rootView = inflater.inflate(R.layout.fragment_form, container, false);
-
+        //UI ELEMENTS
         typeRadioGroup = rootView.findViewById(R.id.typeRadioGroup);
         titleEditText = rootView.findViewById(R.id.titleEditText);
         amountEditText = rootView.findViewById(R.id.amountEditText);
         datePicker = rootView.findViewById(R.id.datePicker);
 
+        //SUBMIT BUTTON
         Button submitBtn = rootView.findViewById(R.id.submitBtn);
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                onSubmitClicked(view);
-
-            }
+            public void onClick(View view) {onSubmitClicked(view);}
         });
-
 
         return rootView;
     }
-    public void onSubmitClicked(View view) {
-        Log.e("bruh", "onSubmitClicked - FormFragment");
 
+    //SUBMIT
+    public void onSubmitClicked(View view) {
+        Log.i(TAG, "onSubmitClicked - FormFragment");
+
+        //CREATE LINE ITEM
         String title = titleEditText.getText().toString();
+
         double amount = Double.parseDouble(amountEditText.getText().toString());
+
         int day = datePicker.getDayOfMonth();
         int month = datePicker.getMonth();
         int year = datePicker.getYear();
@@ -61,14 +69,15 @@ public class FormFragment extends Fragment {
         Date date = calendar.getTime();
 
         LineItem lineItem = new LineItem(amount, title, date);
+        //TYPE OF LINE ITEM
         boolean isExpense = typeRadioGroup.getCheckedRadioButtonId() == R.id.expenseRadioButton;
 
         if (formSubmitListener != null) {
-            Log.e("bruh", "formSubmitListener - FormFragment");
+            Log.i(TAG, "formSubmitListener - FormFragment");
             formSubmitListener.onFormSubmit(lineItem, isExpense);
         }
 
-        // Switch to the first tab (TableFragment)
+        //SWITCH TO TABLE
         ((MainActivity) getActivity()).switchToTab(0);
     }
 
