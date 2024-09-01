@@ -1,7 +1,7 @@
 
 # Seagull - Android Application for Budgeting
 
-Seagull is a budgeting android app that. It allows you to input cash inflows and outflows and find nearby banks using Google Maps integration.
+Seagull is a budgeting android app that. It allows you to input cash inflows and outflows and find nearby banks using Google Maps & Places API.
 Users can click on the bank markers to view more information about the banks, including their name, address, phone number, and website.
 
 https://github.com/user-attachments/assets/d39c34d6-dfd9-40be-a0da-7ee7103338cf
