@@ -139,7 +139,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 } catch (Exception e) {Log.e(TAG,"Phone intent exception caught");}
 
                 try {
-                    String address = b.getWebsite();
+                    String address = b.getAddress();
                     intent.putExtra("address", address);
                 } catch (Exception e) {Log.e(TAG,"Address intent exception caught");}
 
@@ -170,7 +170,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         dataTransfer[0] = mMap;
         dataTransfer[1] = url;
 
-        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces(requireContext());
         getNearbyPlaces.execute(dataTransfer);
         places = getNearbyPlaces.getPlaceIds();
         banks = getNearbyPlaces.getBanks();

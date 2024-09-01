@@ -1,7 +1,9 @@
 package com.example.seagull;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -24,6 +26,9 @@ import java.util.ArrayList;
 public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
     //LOG TAG
     private static final String TAG = "GET_NEARBY";
+
+    private Context context;
+
     //STRING
     String url;
     String data;
@@ -63,6 +68,11 @@ public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
             catch (IOException e) {throw new RuntimeException(e);}
 
         return data;
+    }
+
+    // Constructor that accepts a Context
+    public GetNearbyPlaces(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -116,10 +126,14 @@ public class GetNearbyPlaces extends AsyncTask<Object, String, String> {
                     for (String id : placeIds) {
 
                         //API REQUEST URL
-                        String url =    "https://maps.googleapis.com/maps/api/place/details/json?" +
-                                        "place_id=" + id +
-                                        "&fields=website,name,formatted_phone_number,formatted_address" +
-                                        "&key=AIzaSyATGMGc25BNLlAzllIQLZULVtFt59IQ10E";
+
+                        StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/place/details/json?");
+                        sb.append("place_id=" + id);
+                        sb.append("&fields=website,name,formatted_phone_number,formatted_address");
+                        sb.append("&key=" + context.getResources().getString(R.string.google_maps_key));
+                        String url = sb.toString();
+
+
 
                         //HTTP URL CONNECTION
                         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
